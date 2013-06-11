@@ -9,32 +9,27 @@ using System.Windows.Automation;
 
 namespace Elipori
 {
-    public class UIManager
+    public class UIAService
     {
-        public AutomationElementCollection GetClickableAutomaionElements()
-        {
 
-            return null;
-        }
-
-        public AutomationElementCollection GetTaskBarButtons()
+        public AutomationElementCollection GetTaskBarElements()
         {
             var taskbarElement = AutomationElement.RootElement
                 .FindFirst(TreeScope.Children,new PropertyCondition(AutomationElement.ClassNameProperty,"Shell_TrayWnd"));
 
-            return GetChildButtonCollection(taskbarElement);
+            return GetChildElementCollection(taskbarElement);
         }
 
-        private AutomationElementCollection GetCurrentWindowButtons()
+        public AutomationElementCollection GetCurrentWindowElements()
         {
             var activeElement = AutomationElement.RootElement.FindFirst(TreeScope.Children,                                                                                
                 new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty,ControlType.Window),
                                  new PropertyCondition(AutomationElement.IsOffscreenProperty,false)));
 
-            return GetChildButtonCollection(activeElement);
+            return GetChildElementCollection(activeElement);
         }
 
-        private AutomationElementCollection GetChildButtonCollection(AutomationElement parentElement)
+        private AutomationElementCollection GetChildElementCollection(AutomationElement parentElement)
         {
            return parentElement.FindAll(TreeScope.Descendants | TreeScope.Children,
                     new AndCondition(new OrCondition( new PropertyCondition(AutomationElement.ControlTypeProperty,ControlType.Button),

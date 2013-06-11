@@ -34,8 +34,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MouseKeyboardActivityMonitor_X86">
-      <HintPath>..\Dependencies\MouseKeyboardActivityMonitor_X86.dll</HintPath>
+    <Reference Include="MouseKeyboardActivityMonitor">
+      <HintPath>..\Dependencies\MouseKeyboardActivityMonitor.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -60,7 +60,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="ButtonFactory.cs" />
-    <Compile Include="UIManager.cs" />
+    <Compile Include="UIAService.cs" />
     <Page Include="Elipori.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

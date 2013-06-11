@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Timers;
 using System.Windows;
 using System.Windows.Automation;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace Elipori
@@ -12,20 +14,18 @@ namespace Elipori
     public partial class EliporiWindow : Window
     {
         private static string pressedShortcut;
-        private static bool canContinue = true;
-        private readonly Timer timer = new Timer();
-        private List<AutomationElement> curentAutomationElementCollection = new List<AutomationElement>();
-        private AutomationElement desktopElement = AutomationElement.RootElement;
+        private readonly UIAService UIAService;
+        private readonly List<AutomationElement> curentAutomationElementCollection = new List<AutomationElement>();
 
-        private KeyPressWatcher keyPressWatcher;
-        private UIManager uiManager;
+        private readonly KeyPressWatcher keyPressWatcher;
+        private readonly Timer timer = new Timer();
 
         public EliporiWindow()
         {
             InitializeComponent();
 
             keyPressWatcher = new KeyPressWatcher(this);
-            uiManager = new UIManager();
+            UIAService = new UIAService();
 
             RegisterShowHideKeys();
             StartEliPori();
@@ -47,25 +47,42 @@ namespace Elipori
 
         public void RegisterShowHideKeys()
         {
-            
             keyPressWatcher.RegisterAppShowKeyCombination(Key.LWin, Key.S);
             keyPressWatcher.RegisterAppHideKeyCombination(Key.LWin, Key.H);
         }
 
-        public void StartEliPori()
+        private void StartEliPori()
         {
-            while (canContinue)
+            EliPoriCanvas.Children.Clear();
+            AutomationElementCollection taskBarElements = UIAService.GetTaskBarElements();
+            foreach (AutomationElement element in taskBarElements)
             {
-                EliPoriCanvas.Children.Clear();
-                var clickableElements = uiManager.GetClickableAutomaionElements();
-                foreach (AutomationElement clickableButton in clickableElements)
+                try
                 {
+                    Button clickableButton = ButtonFactory.GetButtonForAutomationElement(element);
+                    EliPoriCanvas.Children.Add(clickableButton);
+                }
+                    //TODO: Replace this exception catching mechanism with something more sensible
+                catch (ArgumentException)
+                {
+                }
+            }
 
+            AutomationElementCollection currentWindowElements = UIAService.GetCurrentWindowElements();
+            foreach (AutomationElement element in currentWindowElements)
+            {
+                try
+                {
+                    Button clickableButton = ButtonFactory.GetButtonForAutomationElement(element);
+                    EliPoriCanvas.Children.Add(clickableButton);
+                }
+                    //TODO: Replace this exception catching mechanism with something more sensible
+                catch (ArgumentException)
+                {
                 }
             }
         }
 
-      
 
         private void Elipori_OnKeyDown(object sender, KeyEventArgs e)
         {
