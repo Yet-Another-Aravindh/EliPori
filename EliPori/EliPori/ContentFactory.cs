@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace InfiniteBoard
+namespace Elipori
 {
     public static class ContentFactory
     {

@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Input;
 
-namespace InfiniteBoard
+namespace Elipori
 {
     /// <summary>
     ///     Interaction logic for MainWindow.xaml

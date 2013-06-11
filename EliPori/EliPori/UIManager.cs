@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation;
 
-namespace InfiniteBoard
+namespace Elipori
 {
     public class UIManager
     {

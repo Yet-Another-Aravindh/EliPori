@@ -5,7 +5,7 @@ using System.Windows.Input;
 using MouseKeyboardActivityMonitor;
 using MouseKeyboardActivityMonitor.WinApi;
 
-namespace InfiniteBoard
+namespace Elipori
 {
     public class KeyPressWatcher
     {

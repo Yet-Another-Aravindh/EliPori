@@ -3,7 +3,7 @@ using System.Windows.Automation;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
 
-namespace InfiniteBoard
+namespace Elipori
 {
     public class ButtonFactory
     {
