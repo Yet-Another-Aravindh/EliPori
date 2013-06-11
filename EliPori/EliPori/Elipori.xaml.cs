@@ -13,7 +13,9 @@ namespace Elipori
     /// </summary>
     public partial class EliporiWindow : Window
     {
-        private static string pressedShortcut;
+        private static string pressedShortcut="";
+        private static bool canContinue = true;
+        private static readonly Dictionary<string, BasePattern> keyPatternMap = new Dictionary<string, BasePattern>();
         private readonly UIAService UIAService;
         private readonly List<AutomationElement> curentAutomationElementCollection = new List<AutomationElement>();
 
@@ -27,7 +29,7 @@ namespace Elipori
             keyPressWatcher = new KeyPressWatcher(this);
             UIAService = new UIAService();
 
-            RegisterShowHideKeys();
+            // RegisterShowHideKeys();
             StartEliPori();
         }
 
@@ -47,6 +49,7 @@ namespace Elipori
 
         public void RegisterShowHideKeys()
         {
+            //TODO: Make this configurable
             keyPressWatcher.RegisterAppShowKeyCombination(Key.LWin, Key.S);
             keyPressWatcher.RegisterAppHideKeyCombination(Key.LWin, Key.H);
         }
@@ -60,7 +63,7 @@ namespace Elipori
                 try
                 {
                     Button clickableButton = ButtonFactory.GetButtonForAutomationElement(element);
-                    EliPoriCanvas.Children.Add(clickableButton);
+                    MapButtonPatten(element, clickableButton);
                 }
                     //TODO: Replace this exception catching mechanism with something more sensible
                 catch (ArgumentException)
@@ -74,7 +77,7 @@ namespace Elipori
                 try
                 {
                     Button clickableButton = ButtonFactory.GetButtonForAutomationElement(element);
-                    EliPoriCanvas.Children.Add(clickableButton);
+                    MapButtonPatten(element,clickableButton);
                 }
                     //TODO: Replace this exception catching mechanism with something more sensible
                 catch (ArgumentException)
@@ -83,16 +86,57 @@ namespace Elipori
             }
         }
 
+        private void MapButtonPatten(AutomationElement element, Button clickableButton)
+        {
+            object pattern;
+            element.TryGetCurrentPattern(InvokePattern.Pattern, out pattern);
+            if (pattern != null)
+            {
+                keyPatternMap.Add(clickableButton.Content.ToString(), (InvokePattern) pattern);
+                EliPoriCanvas.Children.Add(clickableButton);
+            }
+            else
+            {
+                element.TryGetCurrentPattern(ExpandCollapsePattern.Pattern, out pattern);
+                if (pattern != null)
+                {
+                    keyPatternMap.Add(clickableButton.Content.ToString(), (ExpandCollapsePattern) pattern);
+                    EliPoriCanvas.Children.Add(clickableButton);
+                }
+            }
+        }
+
+        private void ActivatePattern(string key)
+        {
+            BasePattern basePattern = keyPatternMap[key];
+            var invokePattern = basePattern as InvokePattern;
+            if (invokePattern != null)
+                invokePattern.Invoke();
+            else
+            {
+                var expandCollapsePattern = basePattern as ExpandCollapsePattern;
+                if (expandCollapsePattern.Current.ExpandCollapseState == ExpandCollapseState.Collapsed)
+                    expandCollapsePattern.Expand();
+                else
+                    expandCollapsePattern.Collapse();
+            }
+        }
 
         private void Elipori_OnKeyDown(object sender, KeyEventArgs e)
         {
             Key pressedKey = e.Key;
 
             if (pressedKey == Key.Return)
-                canContinue = false;
+                Hide();
             else
             {
-                pressedShortcut = pressedShortcut + pressedKey;
+                if (pressedShortcut.Length == 0)
+                    pressedShortcut = pressedShortcut + pressedKey;
+                else if (pressedShortcut.Length == 1)
+                {
+                    pressedShortcut = pressedShortcut + pressedKey;
+                    ActivatePattern(pressedShortcut);
+                }
             }
         }
     }
