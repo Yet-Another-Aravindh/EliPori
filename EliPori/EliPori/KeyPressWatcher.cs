@@ -11,12 +11,13 @@ namespace Elipori
     {
         private readonly Window currentWindow;
         private KeyboardHookListener keyboardHookListener = new KeyboardHookListener(new GlobalHooker());
-        private Key[] showKeys = new Key[2];
-        private Key[] hideKeys = new Key[2];
+        private Keys[] showKeys = new Keys[2];
+        private Keys[] hideKeys = new Keys[2];
         private bool watchSecondKey;
         public KeyPressWatcher(Window currentWindow)
         {
             this.currentWindow = currentWindow;
+            keyboardHookListener.Enabled = true;
             keyboardHookListener.KeyDown += Windows_keyPress;
         }
 
@@ -39,12 +40,12 @@ namespace Elipori
 
         }
 
-        public void RegisterAppShowKeyCombination(params Key[] showKeys)
+        public void RegisterAppShowKeyCombination(params Keys[] showKeys)
         {
             this.showKeys = showKeys;
         }
 
-        public void RegisterAppHideKeyCombination(params Key[] hideKeys)
+        public void RegisterAppHideKeyCombination(params Keys[] hideKeys)
         {
             this.hideKeys = hideKeys;
         }

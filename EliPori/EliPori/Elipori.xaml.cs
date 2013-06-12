@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Timers;
 using System.Windows;
 using System.Windows.Automation;
-using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Input;
+using Button = System.Windows.Controls.Button;
+using KeyEventArgs = System.Windows.Input.KeyEventArgs;
+using Timer = System.Timers.Timer;
 
 namespace Elipori
 {
@@ -28,11 +31,15 @@ namespace Elipori
 
             keyPressWatcher = new KeyPressWatcher(this);
             UIAService = new UIAService();
-
-            // RegisterShowHideKeys();
-            StartEliPori();
+            MinimizeToTray();
+            StartEliPori();             
         }
 
+        private void MinimizeToTray()
+        {
+            RegisterShowHideKeys();
+            this.Hide();
+        }
 
         public void StartTimer()
         {
@@ -50,8 +57,8 @@ namespace Elipori
         public void RegisterShowHideKeys()
         {
             //TODO: Make this configurable
-            keyPressWatcher.RegisterAppShowKeyCombination(Key.LWin, Key.S);
-            keyPressWatcher.RegisterAppHideKeyCombination(Key.LWin, Key.H);
+            keyPressWatcher.RegisterAppShowKeyCombination(Keys.S, Keys.S);
+            keyPressWatcher.RegisterAppHideKeyCombination(Keys.H, Keys.H);
         }
 
         private void StartEliPori()
