@@ -7,7 +7,7 @@
         WindowState="Maximized"
         Background="Transparent"
         ShowInTaskbar="False"
-        KeyDown="Elipori_OnKeyDown">
+        KeyDown="Elipori_OnKeyDown" Topmost="True">
     <Window.Resources>
         
         <Storyboard x:Key="storyBoard">
