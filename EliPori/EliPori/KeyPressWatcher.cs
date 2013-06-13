@@ -23,19 +23,22 @@ namespace Elipori
 
         private void Windows_keyPress(object sender, System.Windows.Forms.KeyEventArgs e)
         {
-            var key = e.KeyCode;
-            if (key.Equals(showKeys[0])||key.Equals(hideKeys[0]))
+            if (!currentWindow.IsActive)
             {
-                watchSecondKey = true;
-            }
+                var key = e.KeyCode;
+                if (!watchSecondKey && (key.Equals(showKeys[0]) || key.Equals(hideKeys[0])))
+                {
+                    watchSecondKey = true;
+                }
 
-            if (watchSecondKey)
-            {
-                if(key.Equals(showKeys[1]))
-                    currentWindow.Show();
-                else if(key.Equals(hideKeys[1]))
-                    currentWindow.Hide();
-                watchSecondKey = false;
+                else if (watchSecondKey)
+                {
+                    if (key.Equals(showKeys[1]))
+                        currentWindow.Show();
+                    else if (key.Equals(hideKeys[1]))
+                        currentWindow.Hide();
+                    watchSecondKey = false;
+                }
             }
 
         }

@@ -38,7 +38,7 @@ namespace Elipori
         private void MinimizeToTray()
         {
             RegisterShowHideKeys();
-            this.Hide();
+           // this.Hide();
         }
 
         public void StartTimer()
@@ -64,6 +64,7 @@ namespace Elipori
         private void StartEliPori()
         {
             EliPoriCanvas.Children.Clear();
+            System.Threading.Thread.Sleep(5000);
             AutomationElementCollection taskBarElements = UIAService.GetTaskBarElements();
             foreach (AutomationElement element in taskBarElements)
             {
@@ -127,6 +128,8 @@ namespace Elipori
                 else
                     expandCollapsePattern.Collapse();
             }
+            pressedShortcut = "";
+            StartEliPori();
         }
 
         private void Elipori_OnKeyDown(object sender, KeyEventArgs e)
