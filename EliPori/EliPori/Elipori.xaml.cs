@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Timers;
 using System.Windows;
 using System.Windows.Automation;
@@ -16,9 +17,12 @@ namespace Elipori
     /// </summary>
     public partial class EliporiWindow : Window
     {
+        [DllImport("user32.dll")]
+        static extern int ShowWindow(IntPtr hWnd, int nCmdShow);
+
         private static string pressedShortcut="";
         private static bool canContinue = true;
-        private static readonly Dictionary<string, BasePattern> keyPatternMap = new Dictionary<string, BasePattern>();
+        private static readonly Dictionary<string, KeyValuePair<AutomationElement, BasePattern>> keyPatternMap = new Dictionary<string, KeyValuePair<AutomationElement, BasePattern>>();
         private readonly UIAService UIAService;
         private readonly List<AutomationElement> curentAutomationElementCollection = new List<AutomationElement>();
 
@@ -38,7 +42,7 @@ namespace Elipori
         private void MinimizeToTray()
         {
             RegisterShowHideKeys();
-           // this.Hide();
+            this.Hide();
         }
 
         public void StartTimer()
@@ -57,14 +61,14 @@ namespace Elipori
         public void RegisterShowHideKeys()
         {
             //TODO: Make this configurable
-            keyPressWatcher.RegisterAppShowKeyCombination(Keys.S, Keys.S);
-            keyPressWatcher.RegisterAppHideKeyCombination(Keys.H, Keys.H);
+            keyPressWatcher.RegisterAppShowKeyCombination(Keys.Escape, Keys.S);
+            keyPressWatcher.RegisterAppHideKeyCombination(Keys.Escape, Keys.H);
         }
 
         private void StartEliPori()
         {
             EliPoriCanvas.Children.Clear();
-            System.Threading.Thread.Sleep(5000);
+            
             AutomationElementCollection taskBarElements = UIAService.GetTaskBarElements();
             foreach (AutomationElement element in taskBarElements)
             {
@@ -78,7 +82,7 @@ namespace Elipori
                 {
                 }
             }
-
+            
             AutomationElementCollection currentWindowElements = UIAService.GetCurrentWindowElements();
             foreach (AutomationElement element in currentWindowElements)
             {
@@ -100,7 +104,7 @@ namespace Elipori
             element.TryGetCurrentPattern(InvokePattern.Pattern, out pattern);
             if (pattern != null)
             {
-                keyPatternMap.Add(clickableButton.Content.ToString(), (InvokePattern) pattern);
+                keyPatternMap.Add(clickableButton.Content.ToString(),new KeyValuePair<AutomationElement, BasePattern>(element, (InvokePattern) pattern));
                 EliPoriCanvas.Children.Add(clickableButton);
             }
             else
@@ -108,7 +112,7 @@ namespace Elipori
                 element.TryGetCurrentPattern(ExpandCollapsePattern.Pattern, out pattern);
                 if (pattern != null)
                 {
-                    keyPatternMap.Add(clickableButton.Content.ToString(), (ExpandCollapsePattern) pattern);
+                    keyPatternMap.Add(clickableButton.Content.ToString(), new KeyValuePair<AutomationElement, BasePattern>(element, (ExpandCollapsePattern)pattern));
                     EliPoriCanvas.Children.Add(clickableButton);
                 }
             }
@@ -116,10 +120,14 @@ namespace Elipori
 
         private void ActivatePattern(string key)
         {
-            BasePattern basePattern = keyPatternMap[key];
+            var keyValuePair = keyPatternMap[key];
+            BasePattern basePattern = keyValuePair.Value;
             var invokePattern = basePattern as InvokePattern;
             if (invokePattern != null)
+            {
                 invokePattern.Invoke();
+                ShowWindow((IntPtr)keyValuePair.Key.Current.NativeWindowHandle,3);
+            }
             else
             {
                 var expandCollapsePattern = basePattern as ExpandCollapsePattern;
@@ -128,8 +136,7 @@ namespace Elipori
                 else
                     expandCollapsePattern.Collapse();
             }
-            pressedShortcut = "";
-            StartEliPori();
+
         }
 
         private void Elipori_OnKeyDown(object sender, KeyEventArgs e)
@@ -146,6 +153,8 @@ namespace Elipori
                 {
                     pressedShortcut = pressedShortcut + pressedKey;
                     ActivatePattern(pressedShortcut);
+                    pressedShortcut = "";
+                    StartEliPori();
                 }
             }
         }

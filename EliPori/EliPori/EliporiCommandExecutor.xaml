@@ -1,0 +1,11 @@
+﻿<Window x:Class="Elipori.EliporiCommandExecutor"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:toolkit="clr-namespace:Microsoft;assembly=WPFToolkit"
+        Title="EliporiCommandExecutor" Height="40" Width="600"
+        ShowInTaskbar="False"
+        WindowStyle="None">
+    <Grid>
+        <TextBox Name="CommandBox"  KeyDown="UIElement_OnKeyDown"></TextBox>
+    </Grid>
+</Window>
